@@ -19,14 +19,11 @@
     "framer-motion": "^12.33.0",
     "next": "^16.1.6",
     "openai": "^6.18.0",
-    "pdf-parse": "^2.4.5",
     "postcss": "^8.5.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
-  },
-  "devDependencies": {
-    "@types/pdf-parse": "^1.1.5"
+    "typescript": "^5.9.3",
+    "unpdf": "^1.4.0"
   }
 }

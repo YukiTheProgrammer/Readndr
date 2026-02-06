@@ -9,6 +9,13 @@ export async function extractTextFromUrl(
   let response: Response;
   try {
     response = await fetch(url, { signal: controller.signal });
+  } catch (err) {
+    clearTimeout(timer);
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("certificate")) {
+      throw new Error(`SSL certificate error fetching URL. Try a different source.`);
+    }
+    throw err;
   } finally {
     clearTimeout(timer);
   }
@@ -22,15 +29,9 @@ export async function extractTextFromUrl(
   if (contentType.includes("application/pdf")) {
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    try {
-      const text = await extractTextFromPdf(buffer);
-      const title = text.split("\n").filter((line) => line.trim())[0]?.trim() || url;
-      return { text, title };
-    } catch {
-      // pdf-parse may not work in serverless (DOMMatrix missing).
-      // Fall back to storing the URL so the paper is still saved.
-      throw new Error("PDF parsing is not available in this environment. Try a non-PDF link.");
-    }
+    const text = await extractTextFromPdf(buffer);
+    const title = text.split("\n").filter((line) => line.trim())[0]?.trim() || url;
+    return { text, title };
   }
 
   // HTML content
