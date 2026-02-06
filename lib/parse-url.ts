@@ -22,9 +22,15 @@ export async function extractTextFromUrl(
   if (contentType.includes("application/pdf")) {
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const text = await extractTextFromPdf(buffer);
-    const title = text.split("\n").filter((line) => line.trim())[0]?.trim() || url;
-    return { text, title };
+    try {
+      const text = await extractTextFromPdf(buffer);
+      const title = text.split("\n").filter((line) => line.trim())[0]?.trim() || url;
+      return { text, title };
+    } catch {
+      // pdf-parse may not work in serverless (DOMMatrix missing).
+      // Fall back to storing the URL so the paper is still saved.
+      throw new Error("PDF parsing is not available in this environment. Try a non-PDF link.");
+    }
   }
 
   // HTML content

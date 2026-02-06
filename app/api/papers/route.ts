@@ -11,6 +11,9 @@ export async function GET(request: NextRequest) {
     }
 
     const paperId = parseInt(id, 10);
+    if (isNaN(paperId)) {
+      return Response.json({ error: "Invalid paper id" }, { status: 400 });
+    }
     const sql = getDb();
 
     const [paper] = await sql`

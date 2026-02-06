@@ -35,7 +35,7 @@ function ResultsContent() {
   }, [query]);
 
   async function handleSelect(card: PaperCardData) {
-    const url = card.pdfUrl || card.url;
+    const url = card.url || card.pdfUrl;
     try {
       const res = await fetch("/api/parse", {
         method: "POST",
