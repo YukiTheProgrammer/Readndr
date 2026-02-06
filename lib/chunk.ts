@@ -14,19 +14,20 @@ export async function chunkPaperIntoTweets(
       {
         role: "system",
         content:
-          "You are a research paper summarizer. You break papers into tweet-sized posts.",
+          "You break research papers into tweet-sized chunks. Preserve information density — do NOT summarize or simplify. Every detail, data point, method, and finding matters. The full thread should reconstruct the paper's content faithfully.",
       },
       {
         role: "user",
-        content: `Break the following research paper into a series of tweet-sized posts (max 280 characters each) that capture the key ideas, findings, and insights.
+        content: `Break this research paper into a thread of tweet-sized chunks (max 280 characters each).
 
 Rules:
-- Each tweet should be self-contained and readable on its own
-- Follow a logical narrative from introduction to conclusion
-- Use plain language, avoid excessive jargon
-- Include key data points and findings
-- Number each tweet (1/n, 2/n, etc.)
-- Aim for 15-30 tweets depending on paper length
+- DO NOT summarize. Chunk the paper's actual content into atomic, dense tweets.
+- Preserve all key information: methods, data, results, numbers, terminology.
+- Each tweet should be one atomic idea or fact — self-contained but dense.
+- Follow the paper's structure: intro → methods → results → discussion → conclusion.
+- Use the paper's own terminology. Do not dumb down or paraphrase loosely.
+- DO NOT number tweets (no "1/n", "2/n", etc.) — numbering is handled externally.
+- Use as many tweets as needed to capture everything. More tweets > lost information.
 
 Paper title: ${title}
 
