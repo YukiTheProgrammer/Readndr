@@ -10,6 +10,12 @@ interface TweetProps {
   paperTitle: string;
   isBookmarked: boolean;
   onToggleBookmark: (tweetId: number) => void;
+  isParent?: boolean;
+  hasChildren?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
+  childPosition?: number;
+  totalChildren?: number;
 }
 
 export default function Tweet({
@@ -20,8 +26,16 @@ export default function Tweet({
   paperTitle,
   isBookmarked,
   onToggleBookmark,
+  isParent = false,
+  hasChildren = false,
+  isExpanded = false,
+  onToggleExpand,
+  childPosition,
+  totalChildren,
 }: TweetProps) {
   const [animating, setAnimating] = useState(false);
+
+  const isChild = childPosition !== undefined;
 
   function handleBookmark() {
     setAnimating(true);
@@ -30,26 +44,69 @@ export default function Tweet({
   }
 
   return (
-    <div className="border-b border-cream-dark/50 bg-cream p-4">
+    <div
+      className={`border-b border-cream-dark/50 p-4 ${
+        isChild ? "bg-cream/60 pl-8" : "bg-cream"
+      }`}
+    >
       {/* Header */}
       <div className="mb-2 flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-forest font-bodoni text-sm font-bold text-cream">
-          R
+        <div
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bodoni text-sm font-bold ${
+            isChild
+              ? "bg-forest/20 text-forest"
+              : "bg-forest text-cream"
+          }`}
+        >
+          {isChild ? "↳" : "R"}
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate font-bodoni text-sm font-semibold text-forest">
             {paperTitle}
           </p>
           <p className="font-avenir text-xs text-forest/50">
-            {position + 1}/{totalTweets}
+            {isChild
+              ? `Detail ${childPosition! + 1}/${totalChildren}`
+              : `${position + 1}/${totalTweets}`}
           </p>
         </div>
+        {isParent && hasChildren && (
+          <button
+            onClick={onToggleExpand}
+            className="shrink-0 rounded-full p-1.5 text-forest/40 transition-colors hover:bg-forest/10 hover:text-forest"
+          >
+            <svg
+              className={`h-5 w-5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        )}
       </div>
 
-      {/* Content */}
-      <p className="mb-3 whitespace-pre-wrap font-avenir text-[15px] leading-relaxed text-forest">
-        {content}
-      </p>
+      {/* Content — clickable for parents with children */}
+      <div
+        onClick={isParent && hasChildren ? onToggleExpand : undefined}
+        className={isParent && hasChildren ? "cursor-pointer" : ""}
+      >
+        <p className="mb-3 whitespace-pre-wrap font-avenir text-[15px] leading-relaxed text-forest">
+          {content}
+        </p>
+      </div>
+
+      {/* Expand hint for parents */}
+      {isParent && hasChildren && !isExpanded && (
+        <button
+          onClick={onToggleExpand}
+          className="mb-2 font-avenir text-xs text-orange hover:text-orange-light"
+        >
+          Tap to expand details
+        </button>
+      )}
 
       {/* Actions */}
       <div className="flex items-center justify-end">

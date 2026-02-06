@@ -11,6 +11,8 @@ interface BookmarkEntry {
   paper_id: number;
   paper_title: string;
   created_at: string;
+  parent_id: number | null;
+  parent_content: string | null;
 }
 
 function getAccountId(): number | null {
@@ -137,8 +139,13 @@ export default function BookmarksPage() {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="mb-1 font-avenir text-xs text-forest/40">
-                      Tweet {bm.position + 1}
+                      {bm.parent_id ? "Detail" : "Topic"} {bm.position + 1}
                     </p>
+                    {bm.parent_id && bm.parent_content && (
+                      <p className="mb-1 line-clamp-1 font-avenir text-xs text-forest/30 italic">
+                        Re: {bm.parent_content}
+                      </p>
+                    )}
                     <p className="whitespace-pre-wrap font-avenir text-[15px] leading-relaxed text-forest">
                       {bm.content}
                     </p>

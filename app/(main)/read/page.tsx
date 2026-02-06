@@ -8,6 +8,7 @@ interface TweetData {
   id: number;
   content: string;
   position: number;
+  parent_id: number | null;
 }
 
 function getAccountId(): number | null {
@@ -176,6 +177,7 @@ function ReadContent() {
           {paperTitle}
         </h1>
         <p className="mt-1 font-avenir text-xs text-forest/50">
+          {tweets.filter((t) => !t.parent_id).length} topics &middot;{" "}
           {tweets.length} tweets
         </p>
       </div>

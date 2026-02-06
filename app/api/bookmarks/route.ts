@@ -16,11 +16,13 @@ export async function GET(request: Request) {
 
   const bookmarks = await sql`
     SELECT b.id, b.tweet_id, b.created_at,
-           t.content, t.position, t.paper_id,
-           p.title as paper_title
+           t.content, t.position, t.paper_id, t.parent_id,
+           p.title as paper_title,
+           pt.content as parent_content
     FROM bookmarks b
     JOIN tweets t ON t.id = b.tweet_id
     JOIN papers p ON p.id = t.paper_id
+    LEFT JOIN tweets pt ON pt.id = t.parent_id
     WHERE b.account_id = ${id}
     ORDER BY b.created_at DESC
   `;
