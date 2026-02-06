@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #40513B;
+  --color-forest-light: #546B4D;
+  --color-light-gray: #D9D9D9;
+  --color-cream: #E5D9B6;
+  --color-cream-dark: #D4C89E;
+  --color-orange: #E67E22;
+  --color-orange-light: #F39C12;
+
+  --font-bodoni: "Libre Bodoni", "Georgia", serif;
+  --font-avenir: "Nunito", "Avenir", "Segoe UI", sans-serif;
+}
+
+body {
+  font-family: var(--font-avenir);
+  background-color: var(--color-light-gray);
+  color: var(--color-forest);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-bodoni);
+}
+
+/* Hide scrollbar for tweet feed */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
