@@ -44,6 +44,10 @@ function ReadContent() {
 
       if (data.tweets && data.tweets.length > 0) {
         setTweets(data.tweets);
+      } else if (!data.text) {
+        throw new Error(
+          "No text available for this paper. It may have failed to download. Try adding it again from search."
+        );
       } else {
         // Need to chunk the paper first
         setChunking(true);
@@ -52,11 +56,16 @@ function ReadContent() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             paperId: parseInt(paperId),
-            text: data.text || "",
+            text: data.text,
             title: data.paper.title,
           }),
         });
-        if (!chunkRes.ok) throw new Error("Failed to process paper");
+        if (!chunkRes.ok) {
+          const errData = await chunkRes.json().catch(() => ({}));
+          throw new Error(
+            errData.error || "Failed to process paper"
+          );
+        }
         const chunkData = await chunkRes.json();
         setTweets(chunkData.tweets);
         setChunking(false);
