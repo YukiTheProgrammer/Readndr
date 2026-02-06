@@ -3,7 +3,20 @@ import { extractTextFromPdf } from "./parse-pdf";
 export async function extractTextFromUrl(
   url: string
 ): Promise<{ text: string; title: string }> {
-  const response = await fetch(url);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30_000);
+
+  let response: Response;
+  try {
+    response = await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch URL: ${response.status} ${response.statusText}`);
+  }
+
   const contentType = response.headers.get("content-type") || "";
 
   if (contentType.includes("application/pdf")) {
