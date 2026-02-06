@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import { chunkPaperIntoTweets } from "@/lib/chunk";
 import { getDb } from "@/lib/db";
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const { paperId, text, title } = await request.json();

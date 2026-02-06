@@ -77,6 +77,7 @@ function ReadContent() {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
+      setChunking(false);
     }
   }, [paperId]);
 

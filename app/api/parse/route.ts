@@ -3,6 +3,8 @@ import { extractTextFromPdf } from "@/lib/parse-pdf";
 import { extractTextFromUrl } from "@/lib/parse-url";
 import { getDb } from "@/lib/db";
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const contentType = request.headers.get("content-type") || "";
