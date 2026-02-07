@@ -208,16 +208,20 @@ export async function searchPapers(query: string): Promise<PaperResult[]> {
     // Rejected promises are silently ignored — the other sources still contribute.
   }
 
-  // Deduplicate by normalized title (lowercase, trimmed)
-  const seen = new Set<string>();
-  const deduplicated: PaperResult[] = [];
+  // Deduplicate by normalized title — prefer entries that have a pdfUrl
+  const byTitle = new Map<string, PaperResult>();
   for (const paper of allResults) {
     const key = paper.title.toLowerCase().trim();
-    if (!key) continue; // skip papers with empty titles
-    if (seen.has(key)) continue;
-    seen.add(key);
-    deduplicated.push(paper);
+    if (!key) continue;
+    const existing = byTitle.get(key);
+    if (!existing) {
+      byTitle.set(key, paper);
+    } else if (!existing.pdfUrl && paper.pdfUrl) {
+      // Upgrade: replace entry that lacks a PDF with one that has it
+      byTitle.set(key, paper);
+    }
   }
 
-  return deduplicated;
+  // Only return papers that have an open-access PDF URL
+  return Array.from(byTitle.values()).filter((p) => p.pdfUrl);
 }
