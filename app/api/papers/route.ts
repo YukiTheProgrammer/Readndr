@@ -26,15 +26,12 @@ export async function GET(request: NextRequest) {
     }
 
     const tweets = await sql`
-      SELECT id, content, position, parent_id
-      FROM tweets
-      WHERE paper_id = ${paperId}
-      ORDER BY
-        CASE WHEN parent_id IS NULL THEN position ELSE (
-          SELECT position FROM tweets t2 WHERE t2.id = tweets.parent_id
-        ) END,
-        parent_id IS NOT NULL,
-        position
+      SELECT t.id, t.content, t.position, t.image_id,
+             pi.data_url as image_url
+      FROM tweets t
+      LEFT JOIN paper_images pi ON pi.id = t.image_id
+      WHERE t.paper_id = ${paperId}
+      ORDER BY t.position
     `;
 
     // Only include raw_text if no tweets exist yet (needed for chunking)

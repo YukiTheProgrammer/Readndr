@@ -63,6 +63,22 @@ export async function initDb() {
   `;
 
   await sql`
+    CREATE TABLE IF NOT EXISTS paper_images (
+      id SERIAL PRIMARY KEY,
+      paper_id INTEGER NOT NULL REFERENCES papers(id) ON DELETE CASCADE,
+      image_index INTEGER NOT NULL,
+      page_num INTEGER NOT NULL,
+      data_url TEXT NOT NULL,
+      UNIQUE(paper_id, image_index)
+    )
+  `;
+
+  // Migration: add image_id to tweets
+  await sql`
+    ALTER TABLE tweets ADD COLUMN IF NOT EXISTS image_id INTEGER REFERENCES paper_images(id) ON DELETE SET NULL
+  `;
+
+  await sql`
     CREATE TABLE IF NOT EXISTS bookmarks (
       id SERIAL PRIMARY KEY,
       account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,

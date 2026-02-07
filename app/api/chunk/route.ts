@@ -15,22 +15,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const tweets = await chunkPaperIntoTweets(title, text);
+    const chunks = chunkPaperIntoTweets(title, text);
     const sql = getDb();
 
-    for (let i = 0; i < tweets.length; i++) {
+    // Fetch paper images to match figure references
+    const paperImages = await sql`
+      SELECT id, image_index FROM paper_images
+      WHERE paper_id = ${paperId}
+      ORDER BY image_index
+    `;
+    const imageMap = new Map<number, number>();
+    for (const img of paperImages) {
+      imageMap.set(img.image_index, img.id);
+    }
+
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i];
+      const imageId =
+        chunk.imageIndex !== null ? (imageMap.get(chunk.imageIndex) ?? null) : null;
+
       await sql`
-        INSERT INTO tweets (paper_id, content, position, parent_id)
-        VALUES (${paperId}, ${tweets[i]}, ${i}, ${null})
+        INSERT INTO tweets (paper_id, content, position, parent_id, image_id)
+        VALUES (${paperId}, ${chunk.content}, ${i}, ${null}, ${imageId})
         ON CONFLICT DO NOTHING
       `;
     }
 
     const savedTweets = await sql`
-      SELECT id, content, position, parent_id
-      FROM tweets
-      WHERE paper_id = ${paperId}
-      ORDER BY position
+      SELECT t.id, t.content, t.position, t.image_id,
+             pi.data_url as image_url
+      FROM tweets t
+      LEFT JOIN paper_images pi ON pi.id = t.image_id
+      WHERE t.paper_id = ${paperId}
+      ORDER BY t.position
     `;
 
     return Response.json({ tweets: savedTweets });

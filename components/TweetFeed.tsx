@@ -6,6 +6,7 @@ interface TweetData {
   id: number;
   content: string;
   position: number;
+  image_url?: string | null;
 }
 
 interface TweetFeedProps {
@@ -33,6 +34,7 @@ export default function TweetFeed({
           paperTitle={paperTitle}
           isBookmarked={bookmarkedIds.has(tweet.id)}
           onToggleBookmark={onToggleBookmark}
+          imageUrl={tweet.image_url}
         />
       ))}
 

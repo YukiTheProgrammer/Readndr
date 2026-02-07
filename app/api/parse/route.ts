@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { extractTextFromPdf } from "@/lib/parse-pdf";
 import { extractTextFromUrl } from "@/lib/parse-url";
 import { getDb } from "@/lib/db";
+import type { ExtractedImage } from "@/lib/parse-pdf";
 
 export const maxDuration = 60;
 
@@ -12,6 +13,7 @@ export async function POST(request: NextRequest) {
 
     let title: string;
     let text: string;
+    let images: ExtractedImage[] = [];
     let sourceUrl: string | null = null;
     let authorsJson: string | null = null;
 
@@ -25,7 +27,9 @@ export async function POST(request: NextRequest) {
 
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      text = await extractTextFromPdf(buffer);
+      const result = await extractTextFromPdf(buffer);
+      text = result.text;
+      images = result.images;
 
       const firstLine = text
         .split("\n")
@@ -45,6 +49,7 @@ export async function POST(request: NextRequest) {
       sourceUrl = url;
       const result = await extractTextFromUrl(url);
       text = result.text;
+      images = result.images;
       title = providedTitle || result.title;
       authorsJson = authors ? JSON.stringify(authors) : null;
     }
@@ -55,6 +60,15 @@ export async function POST(request: NextRequest) {
       RETURNING id
     `;
     const paperId = row.id;
+
+    // Store extracted images
+    for (const img of images) {
+      await sql`
+        INSERT INTO paper_images (paper_id, image_index, page_num, data_url)
+        VALUES (${paperId}, ${img.imageIndex}, ${img.pageNum}, ${img.dataUrl})
+        ON CONFLICT (paper_id, image_index) DO NOTHING
+      `;
+    }
 
     return Response.json({ paperId, title, text });
   } catch (error) {

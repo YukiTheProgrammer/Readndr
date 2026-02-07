@@ -8,6 +8,7 @@ interface TweetData {
   id: number;
   content: string;
   position: number;
+  image_url?: string | null;
 }
 
 function getAccountId(): number | null {

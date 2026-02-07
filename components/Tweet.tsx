@@ -10,6 +10,7 @@ interface TweetProps {
   paperTitle: string;
   isBookmarked: boolean;
   onToggleBookmark: (tweetId: number) => void;
+  imageUrl?: string | null;
 }
 
 export default function Tweet({
@@ -20,6 +21,7 @@ export default function Tweet({
   paperTitle,
   isBookmarked,
   onToggleBookmark,
+  imageUrl,
 }: TweetProps) {
   const [animating, setAnimating] = useState(false);
 
@@ -50,6 +52,19 @@ export default function Tweet({
       <p className="mb-3 whitespace-pre-wrap font-avenir text-[15px] leading-relaxed text-forest">
         {content}
       </p>
+
+      {/* Figure image */}
+      {imageUrl && (
+        <div className="mb-3 overflow-hidden rounded-lg border border-cream-dark/30">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt={`Figure referenced in tweet`}
+            className="w-full object-contain"
+            loading="lazy"
+          />
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex items-center justify-end">
