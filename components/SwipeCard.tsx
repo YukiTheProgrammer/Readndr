@@ -18,10 +18,11 @@ interface SwipeCardProps {
 }
 
 const SOURCE_LABELS: Record<string, string> = {
-  semantic_scholar: "Semantic Scholar",
-  openalex: "OpenAlex",
+  arXiv: "arXiv",
   arxiv: "arXiv",
-  crossref: "CrossRef",
+  "PubMed Central": "PMC",
+  "PubMed": "PubMed",
+  web: "Web",
 };
 
 export default function SwipeCard({ card, active, onSwipe }: SwipeCardProps) {

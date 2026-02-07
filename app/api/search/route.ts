@@ -1,5 +1,7 @@
 import { searchPapers } from "@/lib/search";
 
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q");
